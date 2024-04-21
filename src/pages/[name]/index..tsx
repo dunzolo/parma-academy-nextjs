@@ -1,45 +1,15 @@
-import {
-  getAllCategories,
-  getAllDistinctSquads,
-  getAllMatch,
-  getAllMatchGroupByDay,
-  getAllSquads,
-  getTournament,
-} from "@/api/supabase";
+import { getAllCategoriesTournament, getTournament } from "@/api/supabase";
 import RootLayout from "@/components/layouts/RootLayout";
-import RowMatch from "@/components/row-match/row-match";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { Separator } from "@/components/ui/separator";
-import { Match, MatchDatum } from "@/models/Match";
-import { Squad } from "@/models/Squad";
+import { Category } from "@/models/Category";
 import { Tournament } from "@/models/Tournament";
-import { dateFormatItalian } from "@/utils/utils";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
-import { useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
 type Props = {
-  matches: { [key: string]: MatchDatum[] };
-  categories: string[];
   tournament: Tournament[];
-  squads: string[];
-};
-
-const options = {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
+  categories: Category[];
 };
 
 export const getServerSideProps: GetServerSideProps = async (
@@ -50,10 +20,8 @@ export const getServerSideProps: GetServerSideProps = async (
   try {
     return {
       props: {
-        matches: await getAllMatchGroupByDay(slug as string),
-        categories: await getAllCategories(slug as string),
-        squads: await getAllDistinctSquads(slug as string),
         tournament: await getTournament(slug as string),
+        categories: await getAllCategoriesTournament(slug as string),
       },
     };
   } catch (error) {
@@ -67,46 +35,7 @@ Home.getLayout = (page: any) => {
   return <RootLayout>{page}</RootLayout>;
 };
 
-export default function Home({
-  categories,
-  matches,
-  tournament,
-  squads,
-}: Props) {
-  const [filterSquad, setFilterSquad] = useState("");
-  const [filterCategory, setFilterCategory] = useState("");
-
-  const handleFilterChangeSquad = (event: any) => {
-    if (event === "all") {
-      event = "";
-    }
-    setFilterSquad(event);
-  };
-
-  const handleFilterChangeCategory = (event: any) => {
-    if (event === "all") {
-      event = "";
-    }
-
-    setFilterCategory(event);
-  };
-
-  //Filtra i dati in base al campo "name" e "category"
-  const filterData = Object.entries(matches).map(([date, matchesForDate]) =>
-    matchesForDate.filter(
-      (match) =>
-        (match.squad_home.name
-          .toLowerCase()
-          .includes(filterSquad.toLowerCase()) ||
-          match.squad_away.name
-            .toLowerCase()
-            .includes(filterSquad.toLowerCase())) &&
-        match.squad_home.category
-          .toLowerCase()
-          .includes(filterCategory.toLowerCase())
-    )
-  );
-
+export default function Home({ tournament, categories }: Props) {
   return (
     <div className="container flex-1 space-y-4 p-4 md:p-8">
       <h1 className="text-center text-2xl font-bold">
@@ -114,66 +43,70 @@ export default function Home({
       </h1>
       <h3 className="text-center !mt-0">{tournament.at(0)?.description}</h3>
 
-      <div className="grid grid-cols-2 w-full items-center gap-1.5 sticky top-[56px] bg-white z-[2] pb-2">
-        <div className="text-center">
-          <Label>Nome squadra</Label>
-          <Select onValueChange={handleFilterChangeSquad}>
-            <SelectTrigger>
-              <SelectValue placeholder="Seleziona la squadra" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">Tutte</SelectItem>
-                {squads.map((squad) => {
-                  return (
-                    <SelectItem key={squad} value={squad}>
-                      {squad}
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-        <div className="text-center">
-          <Label>Categoria</Label>
-          <Select onValueChange={handleFilterChangeCategory}>
-            <SelectTrigger>
-              <SelectValue placeholder="Seleziona la categoria" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="all">Tutte</SelectItem>
-                {categories.map((category) => {
-                  return (
-                    <SelectItem key={category} value={category}>
-                      {category}
-                    </SelectItem>
-                  );
-                })}
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
-      </div>
-
-      {filterData.map((matchesForDate, index) => (
-        <div key={index}>
-          {matchesForDate[0]?.day ? (
-            <div className="sticky top-[120px] bg-white z-[1]">
-              <h2 className="text-center text-sm font-bold mb-2">
-                {dateFormatItalian(matchesForDate[0]?.day, options)}
-              </h2>
-              <Separator className="h-[2px] mb-2" />
-            </div>
-          ) : null}
-          <div className="grid gap-2 md:grid-cols-2 place-items-center">
-            {matchesForDate.map((match) => (
-              <RowMatch key={match.id} matchProps={match} />
-            ))}
-          </div>
-        </div>
-      ))}
+      {categories.map((category) => {
+        return (
+          <>
+            <Link
+              href={`/${tournament.at(0)?.slug}/${category.name.toLowerCase()}`}
+            >
+              <div className="flex items-center gap-4 space-y-1">
+                <Image
+                  src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1711795335/webapp-tournament/team-amateurs/u1ppznudrgcewbfd7u1y.png"
+                  alt="logo"
+                  width={512}
+                  height={512}
+                  className="w-12 h-12"
+                />
+                <div>
+                  <h4 className="text-sm font-medium leading-none">
+                    {category.name}
+                  </h4>
+                  <p className="text-sm text-muted-foreground">
+                    {category.description}
+                  </p>
+                </div>
+              </div>
+            </Link>
+            <Separator className="my-4" />
+          </>
+        );
+      })}
     </div>
   );
+}
+
+{
+  /* <div>
+  <ul>
+    <li>
+      Modalità di gioco: <strong>9 vs 9</strong>
+    </li>
+    <li>
+      <strong>Due tempi di gioco da 15 minuti</strong> con interruzione di 3
+      minuti tra i due tempi per consentire cambi e rapidi feedback
+    </li>
+    <li>Rimessa laterale con le mani</li>
+    <li>Autorizzati i calci di punizione diretti (distanza barriera: 7mt)</li>
+    <li>
+      Autorizzati i calci di rigore per evidenti infrazioni (distanza: 9 mt)
+    </li>
+    <li>Previsto il fuorigioco negli ultimi 16,5 mt</li>
+    <li>
+      Il retropassaggio <strong>NON</strong> può essere preso con le mani dal
+      portiere anche all’interno dell’area di rigore
+    </li>
+    <li>
+      In occasione del primo passaggio nella rimessa da fondocampo, non è
+      permesso ai giocatori della squadra avversaria superare la linea
+      determinata dal limite dell’area di rigore e dal suo prolungamento fino
+      alla linea laterale (zona “No Pressing”)
+    </li>
+    <li>
+      I cambi sono volanti ed è consigliabile far giocare tutti/e in ogni
+      partita a meno che, precedentemente alla partita, non si sia concordata
+      direttamente con la squadra avversaria la volontà o la necessità di non
+      far giocare alcuni/alcune tesserati/e causa infortunio o scelta tecnica
+    </li>
+  </ul>
+</div> */
 }

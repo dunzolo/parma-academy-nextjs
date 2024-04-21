@@ -48,6 +48,7 @@ export default function Create({ categories, slug }: Props) {
       name: "",
       logo: "",
       group: "",
+      group_finals: "",
       category: "",
       created_at: "",
       show_label_group: true,
@@ -57,6 +58,7 @@ export default function Create({ categories, slug }: Props) {
       name: "",
       logo: "",
       group: "",
+      group_finals: "",
       category: "",
       created_at: "",
       show_label_group: true,
@@ -65,6 +67,19 @@ export default function Create({ categories, slug }: Props) {
     score_home: 0,
     score_away: 0,
     field: "",
+    tournament_id: {
+      id: "",
+      name: "",
+      year: 0,
+      logo: "",
+      description: "",
+      date_start: "",
+      date_end: "",
+      background_image: "",
+      created_at: "",
+      slug: "",
+    },
+    is_final_phase: false,
   });
 
   async function handleSubmitMatch(event: React.FormEvent<HTMLFormElement>) {
@@ -152,6 +167,18 @@ export default function Create({ categories, slug }: Props) {
           >
             <option value="Campo 1">Campo 1</option>
             <option value="Campo 2">Campo 2</option>
+            <option value="Campo 3">Campo 3</option>
+            <option value="Campo 4">Campo 4</option>
+            <option value="Campo A">Campo A</option>
+            <option value="Campo B">Campo B</option>
+            <option value="Campo C">Campo C</option>
+            <option value="Campo D">Campo D</option>
+            <option value="Campo E">Campo E</option>
+            <option value="Campo F">Campo F</option>
+            <option value="Campo G">Campo G</option>
+            <option value="Campo 1 Stadio “Tardini”">
+              Campo 1 Stadio “Tardini”
+            </option>
           </select>
         </div>
 
