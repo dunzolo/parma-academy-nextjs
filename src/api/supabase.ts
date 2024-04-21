@@ -1,9 +1,12 @@
-import { Match, MatchDatum } from "@/models/Match";
+import { Category } from "@/models/Category";
+import { Match, MatchDatum, MatchProvisionalDatum } from "@/models/Match";
 import { Squad } from "@/models/Squad";
 import { SquadGroup } from "@/models/SquadGroup";
 import { Tournament } from "@/models/Tournament";
 import { supabase } from "@/supabase/supabase";
 import { translateGroup } from "@/utils/utils";
+import { tree } from "next/dist/build/templates/app-page";
+import { boolean } from "zod";
 
 /**
  * Recupera il torneo corrente
@@ -44,11 +47,15 @@ export const getAllSquads = async (slug: string): Promise<Tournament[]> => {
  * Recuperare l'elenco di tutte le squadre presenti
  * @returns
  */
-export const getAllDistinctSquads = async (slug: string): Promise<string[]> => {
-  const response = await supabase
+export const getAllDistinctSquads = async (slug: string, category?: string): Promise<string[]> => {
+  let query = supabase
     .from("squads")
     .select("*, tournament_id!inner(*)")
     .eq("tournament_id.slug", slug);
+
+  if(category) query = query.ilike("category", `%${category}%`);
+
+  const response = await query;
   
     if (response.data) {
       const squads: string[] = response.data.map((entry) => entry.name);
@@ -78,6 +85,36 @@ export const getAllCategories = async (slug: string): Promise<string[]> => {
 
   return [];
 };
+
+export const getSingleCategory = async (category: string): Promise<Category | null> => {
+  const { data, error } = await supabase
+      .from("categories")
+      .select("*")
+      .ilike("name", `%${category}%`);
+
+  if (error) {
+      console.error("Errore durante la ricerca della categoria:", error.message);
+      return null;
+  }
+
+  if (data && data.length > 0) {
+      const categoryData = data[0] as Category; // Assicurati che data[0] sia di tipo Category
+      return categoryData;
+  } else {
+      console.log("Nessuna categoria trovata per il nome:", category);
+      return null;
+  }
+};
+
+export const getAllCategoriesTournament = async (slug: string): Promise<Category[]> => {
+  const response = await supabase
+    .from("categories")
+    .select("*, rule_category_id!inner(*), tournament_id!inner(*)")
+    .eq("tournament_id.slug", slug)
+    .order("name", {ascending:true});
+
+    return response.data ?? [];
+}
 
 /**
  * Recuperare i nomi dei singoli campi da calcio
@@ -118,12 +155,27 @@ export const getAllMatch = async (slug?: string): Promise<MatchDatum[]> => {
   let query = supabase
     .from("match")
     .select("*, squad_home(*), squad_away(*), tournament_id!inner(*)")
-    .order("id", { ascending: true });
+    .order("day", { ascending: true })
+    .order("hour", { ascending: true });
 
   if(slug) query = query.eq("tournament_id.slug", slug);
     
   const { data } = await query;
+
+  return data ?? [];
+};
+
+export const getAllMatchFinalPhase = async (slug?: string): Promise<MatchDatum[]> => {
+  let query = supabase
+    .from("match_final_phase")
+    .select("*, squad_home(*), squad_away(*), tournament_id!inner(*)")
+    .order("day", { ascending: true })
+    .order("hour", { ascending: true });
+
+  if(slug) query = query.eq("tournament_id.slug", slug);
     
+  const { data } = await query;
+
   return data ?? [];
 };
 
@@ -133,20 +185,110 @@ export const getAllMatch = async (slug?: string): Promise<MatchDatum[]> => {
  * @returns 
  */
 export const getAllMatchGroupByDay = async (
-  slug: string
+  slug: string,
+  category: string,
+  isFinalPhase?: boolean
 ): Promise<{
   [key: string]: MatchDatum[];
 }> => {
-  const { data } = await supabase
+  let query = supabase
     .from("match")
-    .select("*, squad_home(*), squad_away(*), tournament_id!inner(*)")
+    .select("*, squad_home!inner(*), squad_away!inner(*), tournament_id!inner(*)")
     .eq("tournament_id.slug", slug)
+    .ilike("squad_home.category", `%${category}%`)
+    .order("day", { ascending: true })
+    .order("hour", { ascending: true });
+
+  if(isFinalPhase){
+    query = query.eq("is_final_phase", isFinalPhase);
+  }else{
+    query = query.eq("is_final_phase", false);
+  }
+
+  const {data} = await query;
+
+  if (data) {
+    // Creare un oggetto per raggruppare i dati per data
+    const groupedData: { [key: string]: MatchDatum[] } = {};
+    for (const row of data) {
+      const dataValue = row.day; // Assumendo che la colonna si chiami "data"
+      if (!groupedData[dataValue]) {
+        groupedData[dataValue] = [];
+      }
+      groupedData[dataValue].push(row);
+    }
+    return groupedData ?? [];
+  }
+
+  return {};
+};
+
+/**
+ * Recupera tutte le partite del torneo suddivise per giorno, ordinate per giorno ed ora
+ * @param slug slug del torneo di riferimento
+ * @returns 
+ */
+export const getAllMatchFinalPhaseGroupByDay = async (
+  slug: string,
+  category: string,
+  isFinalPhase?: boolean
+): Promise<{
+  [key: string]: MatchDatum[];
+}> => {
+  let query = supabase
+    .from("match_final_phase")
+    .select("*, squad_home!inner(*), squad_away!inner(*), tournament_id!inner(*)")
+    .eq("tournament_id.slug", slug)
+    .ilike("squad_home.category", `%${category}%`)
+    .order("day", { ascending: true })
+    .order("hour", { ascending: true });
+
+  if(isFinalPhase){
+    query = query.eq("is_final_phase", isFinalPhase);
+  }else{
+    query = query.eq("is_final_phase", false);
+  }
+
+  const {data} = await query;
+
+  if (data) {
+    // Creare un oggetto per raggruppare i dati per data
+    const groupedData: { [key: string]: MatchDatum[] } = {};
+    for (const row of data) {
+      const dataValue = row.day; // Assumendo che la colonna si chiami "data"
+      if (!groupedData[dataValue]) {
+        groupedData[dataValue] = [];
+      }
+      groupedData[dataValue].push(row);
+    }
+    return groupedData ?? [];
+  }
+
+  return {};
+};
+
+/**
+ * Recupera tutte le partite provvisorie della fase finale torneo suddivise per giorno, ordinate per giorno ed ora
+ * @param slug slug del torneo di riferimento
+ * @returns 
+ */
+export const getAllMatchProvisionalsGroupByDay = async (
+  slug: string,
+  category: string
+): Promise<{
+  [key: string]: MatchProvisionalDatum[];
+}> => {
+  const { data } = await supabase
+    .from("match_provisional")
+    .select("*, tournament_id!inner(*)")
+    .eq("tournament_id.slug", slug)
+    .ilike("category", `%${category}%`)
     .order("day", { ascending: true })
     .order("hour", { ascending: true });
 
   if (data) {
     // Creare un oggetto per raggruppare i dati per data
-    const groupedData: { [key: string]: MatchDatum[] } = {};
+    const groupedData: { [key: string]: MatchProvisionalDatum[] } = {};
     for (const row of data) {
       const dataValue = row.day; // Assumendo che la colonna si chiami "data"
       if (!groupedData[dataValue]) {
@@ -171,7 +313,8 @@ export const getSquadsByCategory = async (
   const response = await supabase
     .from("squads")
     .select("*")
-    .eq("category", category);
+    .eq("category", category)
+    .order("name", {ascending:true});
   return response.data ?? [];
 };
 
@@ -182,6 +325,42 @@ export const getSquadsByCategory = async (
  * @returns
  */
 export const getSquadsByGroup = async (group: string, id?: string) => {
+  let query = supabase
+    .from(`group_${group}`)
+    .select("*, squad_id(*)")
+    .order("id", { ascending: true });
+
+  if (id) query = query.eq("squad_id", id);
+
+  const response = await query;
+  return response.data ?? [];
+};
+
+/**
+ * Recupera l'elenco delle squadre dalla tabella group
+ * @param group Lettera del gruppo per cui vuoi filtrare
+ * @param id ID della squadra per cui vuoi filtrare
+ * @returns
+ */
+export const getSquadsByFinalGroup = async (group: string, id?: string) => {
+  let query = supabase
+    .from(`${group}`)
+    .select("*, squad_id(*)")
+    .order("id", { ascending: true });
+
+  if (id) query = query.eq("squad_id", id);
+
+  const response = await query;
+  return response.data ?? [];
+};
+
+/**
+ * Recupera l'elenco delle squadre dalla tabella group
+ * @param group Lettera del gruppo per cui vuoi filtrare
+ * @param id ID della squadra per cui vuoi filtrare
+ * @returns
+ */
+export const getSquadsByFinalPhaseGroup = async (group: string, id?: string) => {
   let query = supabase
     .from(`group_${group}`)
     .select("*, squad_id(*)")
@@ -273,6 +452,20 @@ export const getMatchesBySquad = async (id: string): Promise<Match> => {
 };
 
 /**
+ * Recupera tutti i match che deve disputare un determinata squadra all'interno del torneo
+ * @param id ID della squadra per cui vuoi recuperare i match
+ * @returns
+ */
+export const getMatchesFinalPhaseBySquad = async (id: string): Promise<Match> => {
+  const response = await supabase
+    .from("match_final_phase")
+    .select("*, squad_home(*), squad_away(*)")
+    .or(`squad_home.eq.${id}, squad_away.eq.${id}`);
+
+  return response.data ?? [];
+};
+
+/**
  * Recupera il singolo match
  * @param id ID del match che vuoi recuperare
  * @returns
@@ -317,6 +510,7 @@ export const createMatch = async (
   selectedSquadAway: string,
   tournament: number,
   field?: string,
+  is_final_phase?: boolean
 ) => {
   const response = await supabase.from("match").insert([
     {
@@ -326,7 +520,40 @@ export const createMatch = async (
       squad_home: selectedSquadHome,
       squad_away: selectedSquadAway,
       field: field,
-      tournament_id: tournament
+      tournament_id: tournament,
+      is_final_phase
+    },
+  ]);
+};
+
+/**
+ * Crea una nuova partita all'interno del calendario del torneo in base al form che hai compilato
+ * @param date Giorno in cui verrà giocata la partita
+ * @param hour Orario in cui verrà giocata la partita
+ * @param selectedSquadHome ID della squadra che giocherà in casa
+ * @param selectedSquadAway ID della squadra che giocherà in trasferta
+ * @param field Campo in cui verrà giocata la partita
+ */
+export const createMatchFinalPhase = async (
+  id: number,
+  date: string,
+  hour: string,
+  selectedSquadHome: string,
+  selectedSquadAway: string,
+  tournament: number,
+  field?: string,
+  is_final_phase?: boolean
+) => {
+  const response = await supabase.from("match_final_phase").insert([
+    {
+      id: id,
+      day: date,
+      hour: hour,
+      squad_home: selectedSquadHome,
+      squad_away: selectedSquadAway,
+      field: field,
+      tournament_id: tournament,
+      is_final_phase
     },
   ]);
 };
@@ -427,6 +654,25 @@ export const updateResult = async (
 };
 
 /**
+ * Aggiorna il risultato della partita selezionata
+ * @param id ID della partita selezioanta
+ * @param score_home Goal segnati dalla squadra di casa
+ * @param score_away Goal segnati dalla squadra in trasferta
+ * @param outcome Risultato finale della partita
+ */
+export const updateResultFinalPhase = async (
+  id: string,
+  score_home: number,
+  score_away: number,
+  outcome: string
+) => {
+  const response = await supabase
+    .from("match_final_phase")
+    .update({ score_home, score_away, outcome })
+    .eq("id", id);
+};
+
+/**
  * Aggiorni i punteggi del girone in base ai risultati della partita inserita
  * @param group Girone della squadra
  * @param id ID della squadra
@@ -448,3 +694,10 @@ export const updatePointsGroup = async (
     .update({ points, goal_scored, goal_conceded, goal_difference })
     .eq("id", id);
 };
+
+export const updateSquadWithGroupFinal = async(id: number, group_finals: string) => {
+  const response = await supabase
+    .from("squads")
+    .update({group_finals})
+    .eq("id", id);
+}
