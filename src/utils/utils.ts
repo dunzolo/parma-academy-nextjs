@@ -187,3 +187,7 @@ export const translateGroup = (group: string) => {
       return group;
   }
 };
+
+export const removePrefix = (testo: string) => {
+  return testo.replace(/^group_/, ''); // Utilizza un'espressione regolare per rimuovere 'group_' solo se è all'inizio della stringa
+}
