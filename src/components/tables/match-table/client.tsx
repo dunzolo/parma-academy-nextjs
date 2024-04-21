@@ -37,6 +37,7 @@ import {
 } from "@/components/ui/select";
 import Link from "next/link";
 import Image from "next/image";
+import { getSquadsByCategory } from "@/api/supabase";
 
 interface MatchClientProps {
   data: MatchDatum[];
@@ -60,6 +61,7 @@ export const MatchClient: React.FC<MatchClientProps> = ({
 }) => {
   const [filterSquad, setFilterSquad] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
+  const [squadsFiltered, setsquads] = useState(squads);
 
   const handleFilterChangeSquad = (event: any) => {
     if (event === "all") {
@@ -68,9 +70,14 @@ export const MatchClient: React.FC<MatchClientProps> = ({
     setFilterSquad(event);
   };
 
-  const handleFilterChangeCategory = (event: any) => {
+  const handleFilterChangeCategory = async (event: any) => {
     if (event === "all") {
       event = "";
+      setsquads(squads);
+    } else {
+      const data = await getSquadsByCategory(event);
+      const squadsArray = data.map((item) => item.name);
+      setsquads(squadsArray);
     }
 
     setFilterCategory(event);
@@ -107,7 +114,7 @@ export const MatchClient: React.FC<MatchClientProps> = ({
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="all">Tutte</SelectItem>
-                {squads.map((squad) => {
+                {squadsFiltered.map((squad) => {
                   return (
                     <SelectItem key={squad} value={squad}>
                       {squad}
@@ -170,24 +177,24 @@ export const MatchClient: React.FC<MatchClientProps> = ({
                     </CardHeader>
                     <CardContent className="p-4 pt-0">
                       <div className="flex items-center text-lg font-bold">
-                        <Image
+                        {/* <Image
                           src={singleMatch.squad_home.logo}
                           alt={singleMatch.squad_home.name.toLowerCase()}
                           width={50}
                           height={50}
-                        />
+                        /> */}
                         <div className="flex justify-between w-full">
                           <span>{singleMatch.squad_home.name}</span>
                           <span>{singleMatch.score_home}</span>
                         </div>
                       </div>
                       <div className="flex items-center text-lg font-bold">
-                        <Image
+                        {/* <Image
                           src={singleMatch.squad_away.logo}
                           alt={singleMatch.squad_away.name.toLowerCase()}
                           width={50}
                           height={50}
-                        />
+                        /> */}
                         <div className="flex justify-between w-full">
                           <span>{singleMatch.squad_away.name}</span>
                           <span>{singleMatch.score_away}</span>

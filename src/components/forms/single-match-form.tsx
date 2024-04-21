@@ -120,25 +120,25 @@ export const SingleMatchForm: React.FC<SquadFormProps> = ({
           ) : null}
         </p>
         <div className="flex items-center text-2xl font-bold">
-          <Image
+          {/* <Image
             src={initialData.squad_home.logo}
             alt={initialData.squad_home.name.toLowerCase()}
             width={50}
             height={50}
             // className="w-full h-auto"
-          />
+          /> */}
           <div className="flex justify-between w-full">
             <span>{initialData.squad_home.name}</span>
           </div>
         </div>
         <div className="flex items-center text-2xl font-bold">
-          <Image
+          {/* <Image
             src={initialData.squad_home.logo}
             alt={initialData.squad_away.name.toLowerCase()}
             width={512}
             height={512}
             className="w-12 h-12"
-          />
+          /> */}
           <div className="flex justify-between w-full">
             <span>{initialData.squad_away.name}</span>
           </div>
