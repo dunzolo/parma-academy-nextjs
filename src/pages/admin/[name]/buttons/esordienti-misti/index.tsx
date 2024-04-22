@@ -39,9 +39,9 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 };
 
-page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default function page({ slug }: Props) {
+export default function Page({ slug }: Props) {
   const [selectedForm, setSelectedForm] = useState("form1"); // Stato per tenere traccia del form selezionato
 
   const handleFormSwitch = (formName: string) => {

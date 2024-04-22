@@ -49,9 +49,9 @@ export const getServerSideProps: GetServerSideProps = async (
   }
 };
 
-page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>;
+Page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default function page({ ranking, slug }: Props) {
+export default function Page({ ranking, slug }: Props) {
   const [matches, setMatches] = useState<any>([]);
 
   const [form, setForm] = useState<MatchDatum>({
