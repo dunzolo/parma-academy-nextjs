@@ -11,7 +11,7 @@ import {
   getRankingByGroup,
   updateSquadWithGroupFinal,
 } from "@/api/supabase";
-import { NewMatchForm } from "../getNewMatchForm";
+import NewMatchForm from "../getNewMatchForm";
 
 type Props = {
   squads: Squad[];
