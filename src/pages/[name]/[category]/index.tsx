@@ -7,7 +7,10 @@ import {
   getAllMatchProvisionalsGroupByDay,
   getAllSquads,
   getGroupsByCategory,
+  getGroupsByCategoryFinalPhase,
+  getRankingByFinalGroup,
   getRankingByGroup,
+  getRulesCurrentCategory,
   getSingleCategory,
   getTournament,
 } from "@/api/supabase";
@@ -45,8 +48,9 @@ type Props = {
   squads: string[];
   matches: { [key: string]: MatchDatum[] };
   matches_final_phase: { [key: string]: MatchDatum[] };
-  match_provisionals: { [key: string]: MatchProvisionalDatum[] };
   groups: SquadGroup[][];
+  groups_final_phase: SquadGroup[][];
+  rules: any;
 };
 
 const options = {
@@ -64,13 +68,13 @@ export const getServerSideProps: GetServerSideProps = async (
 
   try {
     const groupsCategory = await getGroupsByCategory(category);
+    const groupsCategoryFinalPhase = await getGroupsByCategoryFinalPhase(
+      category
+    );
+
     return {
       props: {
         matches: await getAllMatchGroupByDay(
-          slug as string,
-          category as string
-        ),
-        match_provisionals: await getAllMatchProvisionalsGroupByDay(
           slug as string,
           category as string
         ),
@@ -81,8 +85,12 @@ export const getServerSideProps: GetServerSideProps = async (
         ),
         category: await getSingleCategory(category as string),
         groups: await getRankingByGroup(groupsCategory),
+        groups_final_phase: groupsCategoryFinalPhase[0]
+          ? await getRankingByFinalGroup(groupsCategoryFinalPhase)
+          : null,
         squads: await getAllDistinctSquads(slug as string, category as string),
         tournament: await getTournament(slug as string),
+        rules: await getRulesCurrentCategory(category as string),
       },
     };
   } catch (error) {
@@ -100,11 +108,13 @@ export default function Home({
   category,
   matches,
   matches_final_phase,
-  match_provisionals,
   tournament,
   squads,
   groups,
+  groups_final_phase,
+  rules,
 }: Props) {
+  const customWidthTabs = groups_final_phase ? "w-1/4" : "w-1/3";
   const [filterSquad, setFilterSquad] = useState("");
 
   const handleFilterChangeSquad = (event: any) => {
@@ -144,15 +154,25 @@ export default function Home({
       <h1 className="text-center text-2xl font-bold">
         {tournament.at(0)?.name}
       </h1>
-      <h3 className="text-center !mt-0">{tournament.at(0)?.description}</h3>
+      <h3 className="text-center !mt-0">
+        Categoria {category.name.toLowerCase()}
+      </h3>
 
-      <Tabs defaultValue="partite" className="space-y-4">
+      <Tabs defaultValue="partite" className="space-y-4 bg-re">
         <TabsList className="w-full">
-          <TabsTrigger className="w-1/2" value="partite">
+          <TabsTrigger className={customWidthTabs} value="partite">
             Partite
           </TabsTrigger>
-          <TabsTrigger className="w-1/2" value="classifica">
-            Classifica
+          <TabsTrigger className={customWidthTabs} value="gironi">
+            Gironi
+          </TabsTrigger>
+          {groups_final_phase && (
+            <TabsTrigger className={customWidthTabs} value="fasi_finali">
+              Fasi finali
+            </TabsTrigger>
+          )}
+          <TabsTrigger className={customWidthTabs} value="info">
+            Info
           </TabsTrigger>
         </TabsList>
         <TabsContent value="partite" className="space-y-4">
@@ -220,12 +240,12 @@ export default function Home({
             </>
           )}
         </TabsContent>
-        <TabsContent value="classifica" className="space-y-4">
+        <TabsContent value="gironi" className="space-y-4">
           {Object.entries(groups).map(([group, data]) => (
             <Card key={group}>
               <CardHeader
                 className={
-                  "flex flex-row items-center justify-center space-y-0 p-2 rounded-t-xl opacity-90"
+                  "flex flex-row items-center justify-center space-y-0 p-2 rounded-t-xl opacity-90 bg-[#2E3C81] text-white"
                 }
               >
                 <CardTitle className="text-sm font-medium">
@@ -242,6 +262,38 @@ export default function Home({
               </div>
             </Card>
           ))}
+        </TabsContent>
+        {groups_final_phase && (
+          <TabsContent value="fasi_finali" className="space-y-4">
+            {Object.entries(groups_final_phase).map(([group, data]) => (
+              <Card key={group}>
+                <CardHeader
+                  className={
+                    "flex flex-row items-center justify-center space-y-0 p-2 rounded-t-xl opacity-90 bg-[#2E3C81] text-white"
+                  }
+                >
+                  <CardTitle className="text-sm font-medium">
+                    {"GIRONE"}
+                  </CardTitle>
+                </CardHeader>
+                <CardContent className="p-2">
+                  <GroupClient data={data} />
+                </CardContent>
+                <div className="flex-1 text-sm text-muted-foreground text-center space-x-2 py-2">
+                  Classifica aggiornata
+                </div>
+              </Card>
+            ))}
+          </TabsContent>
+        )}
+        <TabsContent value="info" className="space-y-4">
+          <h3 className="font-bold text-center">REGOLAMENTO</h3>
+          <div
+            className="px-4 !mt-0 [&_ul]:list-disc [&_li]:pt-2 [&_li]:text-sm"
+            dangerouslySetInnerHTML={{
+              __html: rules[0].rule_category_id.description,
+            }}
+          />
         </TabsContent>
       </Tabs>
     </div>

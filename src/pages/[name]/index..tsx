@@ -1,11 +1,17 @@
-import { getAllCategoriesTournament, getTournament } from "@/api/supabase";
+import {
+  getAllCategoriesTournament,
+  getSquadsByCategory,
+  getTournament,
+} from "@/api/supabase";
 import RootLayout from "@/components/layouts/RootLayout";
 import { Separator } from "@/components/ui/separator";
 import { Category } from "@/models/Category";
 import { Tournament } from "@/models/Tournament";
+import { count } from "console";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import Image from "next/image";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 
 type Props = {
   tournament: Tournament[];
@@ -55,10 +61,10 @@ export default function Home({ tournament, categories }: Props) {
                   alt="logo"
                   width={512}
                   height={512}
-                  className="w-12 h-12"
+                  className="w-16 h-16"
                 />
                 <div>
-                  <h4 className="text-sm font-medium leading-none">
+                  <h4 className="text-base font-semibold leading-none">
                     {category.name}
                   </h4>
                   <p className="text-sm text-muted-foreground">
@@ -79,33 +85,26 @@ export default function Home({ tournament, categories }: Props) {
   /* <div>
   <ul>
     <li>
-      Modalità di gioco: <strong>9 vs 9</strong>
+    Le gare si svolgeranno con la <strong>Modalità di Gioco 9 vs 9</strong>.
     </li>
     <li>
-      <strong>Due tempi di gioco da 15 minuti</strong> con interruzione di 3
-      minuti tra i due tempi per consentire cambi e rapidi feedback
+      Ufficiali di gara: Le partite saranno arbitrate da <strong>Arbitri Ufficiali dell’Associazione Italiana Arbitri</strong>, appartenenti alle Sezioni territorialmente competenti.
     </li>
-    <li>Rimessa laterale con le mani</li>
-    <li>Autorizzati i calci di punizione diretti (distanza barriera: 7mt)</li>
+    <li><strong>Due tempi di gioco da 15'</strong> con time out tecnico a metà per consentire cambi e rapidi feedback.</li>
+    <li>Rimessa laterale con le mani.</li>
     <li>
-      Autorizzati i calci di rigore per evidenti infrazioni (distanza: 9 mt)
-    </li>
-    <li>Previsto il fuorigioco negli ultimi 16,5 mt</li>
-    <li>
-      Il retropassaggio <strong>NON</strong> può essere preso con le mani dal
-      portiere anche all’interno dell’area di rigore
+      <strong>Dimensioni della porta: 6x2 metri</strong> (in alternativa, comprese tra i seguenti valori: 5-6 x 1,80-2 metri).
     </li>
     <li>
-      In occasione del primo passaggio nella rimessa da fondocampo, non è
-      permesso ai giocatori della squadra avversaria superare la linea
-      determinata dal limite dell’area di rigore e dal suo prolungamento fino
-      alla linea laterale (zona “No Pressing”)
+      Il pallone utilizzato per le gare è convenzionalmente identificato con il numero “4”.
     </li>
     <li>
-      I cambi sono volanti ed è consigliabile far giocare tutti/e in ogni
-      partita a meno che, precedentemente alla partita, non si sia concordata
-      direttamente con la squadra avversaria la volontà o la necessità di non
-      far giocare alcuni/alcune tesserati/e causa infortunio o scelta tecnica
+      <strong>Consegna Distinta Gara obbligatoria</strong> a inizio torneo, sostituzioni libere e a discrezione degli allenatori che garantiranno l’utilizzo di tutte le calciatrici durante lo svolgimento del torneo.
+    </li>
+    <li>
+      <strong>In occasione di ogni le partecipanti alla gara dovranno salutarsi fra loro</strong> sia all’inizio che alla fine di ogni confronto, utilizzando la stessa cerimonia. In
+entrambe le occasioni le partecipanti dovranno schierarsi a centrocampo insieme all’
+arbitro, salutando il pubblico e la squadra avversaria.
     </li>
   </ul>
 </div> */

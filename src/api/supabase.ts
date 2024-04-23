@@ -32,6 +32,19 @@ export const getAllCurrentYearTournaments = async (year: number) => {
 };
 
 /**
+ * @description Recupera le regole/info del torneo in riferimento alla categoria selezionata
+ * @param category
+ */
+export const getRulesCurrentCategory = async (category: string) => {
+  const response = await supabase
+    .from("categories")
+    .select("rule_category_id!inner(description)")
+    .ilike("name", `%${category}%`);
+
+    return response.data ?? [];
+}
+
+/**
  * Recuperare l'elenco di tutte le squadre presenti
  * @returns
  */
@@ -308,13 +321,19 @@ export const getAllMatchProvisionalsGroupByDay = async (
  * @returns
  */
 export const getSquadsByCategory = async (
-  category: string
+  category: string,
+  out_tournament?: boolean
 ): Promise<Squad[]> => {
-  const response = await supabase
+  let query =  supabase
     .from("squads")
     .select("*")
     .eq("category", category)
     .order("name", {ascending:true});
+
+  if(!out_tournament) query = query.eq("out_tournament", false);
+
+  const response = await query;
+
   return response.data ?? [];
 };
 
@@ -395,6 +414,28 @@ export const getRankingByGroup = async (
   return responses;
 };
 
+/**
+ * Recupera tutti i record dalle tabelle dei gironi della fase finale del torneo
+ * @param groups Array di lettere dei gironi per cui vuoi filtrare
+ * @returns
+ */
+export const getRankingByFinalGroup = async (
+  groups: string[]
+): Promise<SquadGroup[][]> => {
+  const responses = await Promise.all(
+    groups.map(async (group) => {
+      const { data } = await supabase
+        .from(`${group}`)
+        .select("*, squad_id(*)")
+        .order("points", { ascending: false })
+        .order("goal_difference", { ascending: false })
+        .order("goal_scored", { ascending: false })
+      return data as SquadGroup[];
+    })
+  );
+  return responses;
+};
+
 export const getGroupsByCategory = async (category: string | undefined) => {
   const response = await supabase
     .from("squads")
@@ -403,6 +444,21 @@ export const getGroupsByCategory = async (category: string | undefined) => {
 
   if (response.data) {
     const groups: string[] = response.data.map((entry) => entry.group);
+    const uniqueGroups = Array.from(new Set(groups)).sort();
+    return uniqueGroups;
+  }
+
+  return [];
+};
+
+export const getGroupsByCategoryFinalPhase = async (category: string | undefined) => {
+  const response = await supabase
+    .from("squads")
+    .select("group_finals")
+    .ilike("category", `%${category}%`);
+
+  if (response.data) {
+    const groups: string[] = response.data.map((entry) => entry.group_finals);
     const uniqueGroups = Array.from(new Set(groups)).sort();
     return uniqueGroups;
   }

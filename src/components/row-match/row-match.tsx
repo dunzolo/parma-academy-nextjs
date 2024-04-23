@@ -14,49 +14,20 @@ interface MatchClientProps {
   showCardHeader?: boolean;
 }
 
-const options = {
-  weekday: "long",
-  year: "numeric",
-  month: "long",
-  day: "numeric",
-};
-
-export default function RowMatch({
-  matchProps,
-  showBgColor = true,
-  showCardHeader = false,
-}: MatchClientProps) {
-  const { squad_home, squad_away, hour, field, outcome, day } = matchProps;
-  let bg_color = "";
-  let style_header = showCardHeader ? "" : "flex items-center";
-
-  if (showBgColor) {
-    bg_color = getBackgroundColorCard(squad_home.category);
-  }
+export default function RowMatch({ matchProps }: MatchClientProps) {
+  const { squad_home, squad_away, hour, field, outcome } = matchProps;
 
   return (
     <>
-      <Card
-        className={clsx(
-          "rounded-xl w-[99%] mb-2 relative bg-opacity-90",
-          style_header,
-          bg_color
-        )}
-      >
-        {showCardHeader ? (
-          <>
-            <CardHeader className="rounded-t-xl bg-muted px-4 py-2">
-              <CardTitle className="text-sm font-medium flex justify-between">
-                <span>📆 {dateFormatItalian(day, options)}</span>
-                <span>
-                  {squad_home.show_label_group
-                    ? "GIRONE " + squad_home.group
-                    : ""}
-                </span>
-              </CardTitle>
-            </CardHeader>
-          </>
-        ) : null}
+      <Card className={clsx("rounded-xl w-[99%] mb-2 relative bg-opacity-90")}>
+        <CardHeader className="rounded-t-xl bg-muted px-4 py-2 opacity-90 bg-[#2E3C81] text-white">
+          <CardTitle className="text-sm font-medium flex justify-between">
+            <span>🏟️​ {field}</span>
+            <span>
+              {squad_home.show_label_group ? "GIRONE " + squad_home.group : ""}
+            </span>
+          </CardTitle>
+        </CardHeader>
         <div className="min-h-16 w-full flex items-center justify-between text-xs font-bold">
           <div className="w-1/3 flex items-center">
             {/* <Image
