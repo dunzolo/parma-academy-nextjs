@@ -51,7 +51,7 @@ export default function Home({ tournament, categories }: Props) {
             >
               <div className="flex items-center gap-4 space-y-1">
                 <Image
-                  src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1711795335/webapp-tournament/team-amateurs/u1ppznudrgcewbfd7u1y.png"
+                  src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1713817769/webapp-tournament/tournaments_logos/ioemejleaaqvlfyycyme.png"
                   alt="logo"
                   width={512}
                   height={512}
@@ -67,7 +67,7 @@ export default function Home({ tournament, categories }: Props) {
                 </div>
               </div>
             </Link>
-            <Separator className="my-4" />
+            <Separator className="!my-2" />
           </>
         );
       })}

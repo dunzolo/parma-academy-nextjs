@@ -92,13 +92,13 @@ export const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
               ⚽️ {categories.length} categorie - {squads.length} squadre
             </div>
           </div>
-          {/* <Image
+          <Image
             src={tournament.logo}
             alt="logo"
             width={512}
             height={512}
             className="w-16 h-16"
-          /> */}
+          />
         </CardContent>
       </Card>
     </Link>

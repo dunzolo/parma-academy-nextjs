@@ -10,7 +10,7 @@ export default function Header() {
         <div className="hidden lg:block">
           <Link href="/">
             <Image
-              src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1711795335/webapp-tournament/team-amateurs/u1ppznudrgcewbfd7u1y.png"
+              src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1713817769/webapp-tournament/tournaments_logos/ioemejleaaqvlfyycyme.png"
               alt="logo"
               width={512}
               height={512}
