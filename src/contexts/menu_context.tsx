@@ -23,25 +23,14 @@ export const MenuContextProvider = ({ children }: { children: ReactNode }) => {
 
   useEffect(() => {
     const getData = async () => {
-      const categories = await getAllCategories(name as string);
-
       let data: NavItem[] = [
         {
-          title: "Calendario",
+          title: "Categorie",
           href: `/${name}`,
           icon: "user",
-          label: "Calendario",
+          label: "Categorie",
         },
       ];
-
-      categories.map((category) =>
-        data.push({
-          title: `Classifica ${category.toLowerCase()}`,
-          href: `/${name}/classifiche/${category.toLowerCase()}`,
-          icon: "user",
-          label: `Classifica ${category.toLowerCase()}`,
-        })
-      );
 
       setData(data);
     };

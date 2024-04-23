@@ -30,12 +30,14 @@ export default function RowMatch({ matchProps }: MatchClientProps) {
         </CardHeader>
         <div className="min-h-16 w-full flex items-center justify-between text-xs font-bold">
           <div className="w-1/3 flex items-center">
-            {/* <Image
-              src={squad_home.logo}
-              alt={squad_home.name.toLowerCase()}
-              width={50}
-              height={50}
-            /> */}
+            {squad_home.logo && (
+              <Image
+                src={squad_home.logo}
+                alt={squad_home.name.toLowerCase()}
+                width={50}
+                height={50}
+              />
+            )}
             {squad_home.name}
           </div>
           <div className="rounded min-w-[55px] max-w-[85px] bg-white bg-opacity-50 text-center p-1">
@@ -46,12 +48,14 @@ export default function RowMatch({ matchProps }: MatchClientProps) {
           </div>
           <div className="w-1/3 flex items-center justify-end">
             <span className="text-end">{squad_away.name}</span>
-            {/* <Image
-              src={squad_away.logo}
-              alt={squad_away.name.toLowerCase()}
-              width={50}
-              height={50}
-            /> */}
+            {squad_away.logo && (
+              <Image
+                src={squad_away.logo}
+                alt={squad_away.name.toLowerCase()}
+                width={50}
+                height={50}
+              />
+            )}
           </div>
         </div>
         {/* <div className="absolute top-0 left-0 w-full">
