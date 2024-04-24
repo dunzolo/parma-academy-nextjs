@@ -51,17 +51,20 @@ export default function Home({ tournament, categories }: Props) {
 
       {categories.map((category) => {
         return (
-          <>
+          <div className="mt-4" key={category.id}>
             <Link
               href={`/${tournament.at(0)?.slug}/${category.name.toLowerCase()}`}
             >
               <div className="flex items-center gap-4 space-y-1">
                 <Image
-                  src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1713817769/webapp-tournament/tournaments_logos/ioemejleaaqvlfyycyme.png"
+                  src={
+                    tournament.at(0)?.logo ??
+                    "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.pngfind.com%2Fmpng%2FiJooxRm_default-avatar-svg-png-icon-free-download-avatar%2F&psig=AOvVaw0qxi0_fiy-wvNoamEjfYqq&ust=1714076048595000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCMCmj4TV24UDFQAAAAAdAAAAABAY"
+                  }
                   alt="logo"
                   width={512}
                   height={512}
-                  className="w-16 h-16"
+                  className="w-14 h-14"
                 />
                 <div>
                   <h4 className="text-base font-semibold leading-none">
@@ -74,7 +77,7 @@ export default function Home({ tournament, categories }: Props) {
               </div>
             </Link>
             <Separator className="!my-2" />
-          </>
+          </div>
         );
       })}
     </div>

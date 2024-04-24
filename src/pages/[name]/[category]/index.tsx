@@ -158,25 +158,27 @@ export default function Home({
         Categoria {category.name.toLowerCase()}
       </h3>
 
-      <Tabs defaultValue="partite" className="space-y-4 bg-re">
-        <TabsList className="w-full">
-          <TabsTrigger className={customWidthTabs} value="partite">
-            Partite
-          </TabsTrigger>
-          <TabsTrigger className={customWidthTabs} value="gironi">
-            Gironi
-          </TabsTrigger>
-          {groups_final_phase && (
-            <TabsTrigger className={customWidthTabs} value="fasi_finali">
-              Fasi finali
+      <Tabs defaultValue="partite">
+        <div className="bg-white sticky top-[56px] py-2 z-[2]">
+          <TabsList className="w-full">
+            <TabsTrigger className={customWidthTabs} value="partite">
+              Partite
             </TabsTrigger>
-          )}
-          <TabsTrigger className={customWidthTabs} value="info">
-            Info
-          </TabsTrigger>
-        </TabsList>
-        <TabsContent value="partite" className="space-y-4">
-          <div className="grid grid-cols-1 w-full items-center gap-1.5 sticky top-[56px] bg-white z-[2] pb-2">
+            <TabsTrigger className={customWidthTabs} value="gironi">
+              Gironi
+            </TabsTrigger>
+            {groups_final_phase && (
+              <TabsTrigger className={customWidthTabs} value="fasi_finali">
+                Fasi finali
+              </TabsTrigger>
+            )}
+            <TabsTrigger className={customWidthTabs} value="info">
+              Info
+            </TabsTrigger>
+          </TabsList>
+        </div>
+        <TabsContent value="partite" className="!mt-0 space-y-4">
+          <div className="grid grid-cols-1 w-full items-center gap-1.5 sticky top-[100px] bg-white z-[2] py-2">
             <div className="text-center">
               <Label>Nome squadra</Label>
               <Select onValueChange={handleFilterChangeSquad}>
@@ -200,9 +202,9 @@ export default function Home({
           </div>
 
           {filterData.map((matchesForDate, index) => (
-            <div key={index}>
+            <div key={index} className="!mt-0">
               {matchesForDate[0]?.day ? (
-                <div className="sticky top-[120px] bg-white z-[1]">
+                <div className="sticky !top-[175px] bg-white z-[2] py-2">
                   <h2 className="text-center text-sm font-bold mb-2">
                     {dateFormatItalian(matchesForDate[0]?.day, options)}
                   </h2>

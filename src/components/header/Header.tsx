@@ -20,7 +20,7 @@ export default function Header() {
       <nav className="h-14 flex items-center justify-between px-4">
         <Link href="/">
           <Image
-            src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1713817769/webapp-tournament/tournaments_logos/ioemejleaaqvlfyycyme.png"
+            src="https://res.cloudinary.com/dlzvlthdr/image/upload/v1713989304/webapp-tournament/tournaments_logos/wlzltte2wwzfwrrbafid.png"
             alt="logo"
             width={512}
             height={512}
