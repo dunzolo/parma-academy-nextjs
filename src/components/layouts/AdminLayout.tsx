@@ -14,7 +14,6 @@ const DashboardLayout = ({ children }: any) => {
         <main className="w-full pt-16">{children}</main>
         <Toaster />
       </div>
-      <AdminFooter />
     </MenuContextProvider>
   );
 };

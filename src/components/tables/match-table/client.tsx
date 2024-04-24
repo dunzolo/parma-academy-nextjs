@@ -172,6 +172,12 @@ export const MatchClient: React.FC<MatchClientProps> = ({
                               </span>
                             </>
                           ) : null}
+                          <>
+                            &nbsp;-&nbsp;
+                            <span className="font-bold">
+                              {singleMatch.field}
+                            </span>
+                          </>
                         </p>
                       </CardTitle>
                     </CardHeader>

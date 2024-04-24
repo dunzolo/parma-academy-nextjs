@@ -46,7 +46,9 @@ export const getServerSideProps: GetServerSideProps = async (
 page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>;
 
 export default function page({ matches, categories, squads, slug }: Props) {
-  const breadcrumbItems = [{ title: "Match", link: `/admin/${slug}/match` }];
+  const breadcrumbItems = [
+    { title: "Fasi finali", link: `/admin/${slug}/final-phase` },
+  ];
 
   return (
     <>

@@ -25,16 +25,22 @@ export const MenuContextProvider = ({ children }: { children: ReactNode }) => {
     const getData = async () => {
       const data: NavItem[] = [
         {
-          title: "Squadre",
-          href: `/admin/${name}/squad`,
-          icon: "user",
-          label: "squadre",
-        },
-        {
           title: "Match",
           href: `/admin/${name}/match`,
           icon: "trophy",
           label: "match",
+        },
+        {
+          title: "Fasi finali",
+          href: `/admin/${name}/final-phase`,
+          icon: "trophy",
+          label: "fasi finali",
+        },
+        {
+          title: "Buttons",
+          href: `/admin/${name}/buttons`,
+          icon: "user",
+          label: "button",
         },
       ];
 
