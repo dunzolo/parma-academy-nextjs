@@ -50,10 +50,70 @@ export const timeFormatHoursMinutes = (time: string) => {
  * @param squad squadra per cui devo aggiornare i dati della classfica
  * @param group girone della squadra
  */
+export const updatePointsSquad = async (
+  matches: Match,
+  squad: SquadGroup,
+  group: string
+) => {
+  //azzero ogni volta il punteggio per gestire le modifiche dei punteggi delle partite
+  squad.goal_scored = 0;
+  squad.goal_conceded = 0;
+  squad.goal_difference = 0;
+  squad.points = 0;
+
+  matches.forEach((match: MatchDatum) => {
+    //assegno i punteggi quando la partita cointiene un risultato
+    if (match.score_home != null && match.score_away != null) {
+      // Se la mia squadra corrisponde alla squadra in trasferta controllo i punteggi trasferta (away)
+      if (match.squad_away.id === squad.id) {
+        squad.goal_scored += match.score_away;
+        squad.goal_conceded += match.score_home;
+        squad.goal_difference += match.score_away - match.score_home;
+
+        if (match.score_away > match.score_home) {
+          squad.points += 3;
+        } else if (match.score_away === match.score_home) {
+          squad.points += 1;
+        } else {
+          squad.points += 0;
+        }
+        // Se la mia squadra corrisponde alla squadra di casa controllo i punteggi casa (home)
+      } else if (match.squad_home.id === squad.id) {
+        squad.goal_scored += match.score_home;
+        squad.goal_conceded += match.score_away;
+        squad.goal_difference += match.score_home - match.score_away;
+
+        if (match.score_home > match.score_away) {
+          squad.points += 3;
+        } else if (match.score_home === match.score_away) {
+          squad.points += 1;
+        } else {
+          squad.points += 0;
+        }
+      }
+    }
+  });
+
+  const response = await updatePointsGroup(
+    group,
+    squad.id,
+    squad.points,
+    squad.goal_scored,
+    squad.goal_conceded,
+    squad.goal_difference
+  );
+};
+
+/**
+ * Funzione che aggiorna i punteggi del girone in base ai goal realizzati
+ * @param matchesBySquad array di tutte le partite del torneo della squadra
+ * @param squad squadra per cui devo aggiornare i dati della classfica
+ * @param group girone della squadra
+ */
 export const updatePointsSquadHome = async (
   matchesBySquad: Match,
   squad: SquadGroup,
-  group: string,
+  group: string
 ) => {
   //azzero ogni volta il punteggio per gestire le modifiche dei punteggi delle partite
   squad.goal_scored = 0;
@@ -67,7 +127,7 @@ export const updatePointsSquadHome = async (
       //verifico tramite booleano se la squadra ha giocato in casa oppure no per aggiornare la relativa classifica
       squad.goal_scored += match.score_home;
       squad.goal_conceded += match.score_away;
-      squad.goal_difference += (match.score_home - match.score_away);
+      squad.goal_difference += match.score_home - match.score_away;
 
       if (match.score_home > match.score_away) {
         squad.points += 3;
@@ -98,7 +158,7 @@ export const updatePointsSquadHome = async (
 export const updatePointsSquadAway = async (
   matchesBySquad: Match,
   squad: SquadGroup,
-  group: string,
+  group: string
 ) => {
   //azzero ogni volta il punteggio per gestire le modifiche dei punteggi delle partite
   squad.goal_scored = 0;
@@ -112,7 +172,7 @@ export const updatePointsSquadAway = async (
       //verifico tramite booleano se la squadra ha giocato in casa oppure no per aggiornare la relativa classifica
       squad.goal_scored += match.score_away;
       squad.goal_conceded += match.score_home;
-      squad.goal_difference += (match.score_away - match.score_home);
+      squad.goal_difference += match.score_away - match.score_home;
 
       if (match.score_away > match.score_home) {
         squad.points += 3;
@@ -189,5 +249,5 @@ export const translateGroup = (group: string) => {
 };
 
 export const removePrefix = (testo: string) => {
-  return testo.replace(/^group_/, ''); // Utilizza un'espressione regolare per rimuovere 'group_' solo se è all'inizio della stringa
-}
+  return testo.replace(/^group_/, ""); // Utilizza un'espressione regolare per rimuovere 'group_' solo se è all'inizio della stringa
+};

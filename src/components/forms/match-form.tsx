@@ -1,17 +1,14 @@
 "use client";
 // #ZOD
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 // #REACT
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 // #NEXT
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 // #UI COMPONENTS
-import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -22,6 +19,9 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
 // #SUPABSE
 import {
   getMatchesBySquad,
@@ -35,8 +35,7 @@ import { SquadGroup } from "@/models/SquadGroup";
 import {
   dateFormatItalian,
   timeFormatHoursMinutes,
-  updatePointsSquadHome,
-  updatePointsSquadAway,
+  updatePointsSquad,
 } from "@/utils/utils";
 
 const BUTTON_TEXT_INSERT = "Inserisci";
@@ -126,16 +125,8 @@ export const MatchForm: React.FC<MatchFormProps> = ({ initialData }) => {
           squad_away.id
         );
 
-        updatePointsSquadHome(
-          matchesBySquadHome,
-          squadHome[0],
-          squad_home.group
-        );
-        updatePointsSquadAway(
-          matchesBySquadAway,
-          squadAway[0],
-          squad_away.group
-        );
+        updatePointsSquad(matchesBySquadHome, squadHome[0], squad_home.group);
+        updatePointsSquad(matchesBySquadAway, squadAway[0], squad_away.group);
 
         if (action == BUTTON_TEXT_INSERT) {
           setAction(BUTTON_TEXT_UPDATE);
