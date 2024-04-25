@@ -1,17 +1,14 @@
 "use client";
 // #ZOD
-import * as z from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 // #REACT
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 // #NEXT
-import { useParams, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 // #UI COMPONENTS
-import { useToast } from "@/components/ui/use-toast";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Switch } from "@/components/ui/switch";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Form,
@@ -22,13 +19,13 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
+import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
+import { useToast } from "@/components/ui/use-toast";
 // #SUPABSE
 import {
-  getMatchesBySquad,
   getMatchesFinalPhaseBySquad,
   getSquadsByFinalGroup,
-  getSquadsByGroup,
-  updateResult,
   updateResultFinalPhase,
 } from "@/api/supabase";
 // #MODEL
@@ -37,10 +34,9 @@ import { SquadGroup } from "@/models/SquadGroup";
 // #UTILS
 import {
   dateFormatItalian,
-  timeFormatHoursMinutes,
-  updatePointsSquadHome,
-  updatePointsSquadAway,
   removePrefix,
+  timeFormatHoursMinutes,
+  updatePointsSquad,
 } from "@/utils/utils";
 
 const BUTTON_TEXT_INSERT = "Inserisci";
@@ -132,12 +128,12 @@ export const FinalPhaseMatchForm: React.FC<MatchFormProps> = ({
           squad_away.id
         );
 
-        updatePointsSquadHome(
+        updatePointsSquad(
           matchesBySquadHome,
           squadHome[0],
           removePrefix(squad_home.group_finals)
         );
-        updatePointsSquadAway(
+        updatePointsSquad(
           matchesBySquadAway,
           squadAway[0],
           removePrefix(squad_away.group_finals)

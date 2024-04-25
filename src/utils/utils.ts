@@ -65,7 +65,7 @@ export const updatePointsSquad = async (
     //assegno i punteggi quando la partita cointiene un risultato
     if (match.score_home != null && match.score_away != null) {
       // Se la mia squadra corrisponde alla squadra in trasferta controllo i punteggi trasferta (away)
-      if (match.squad_away.id === squad.id) {
+      if (match.squad_away.id === squad.squad_id.id) {
         squad.goal_scored += match.score_away;
         squad.goal_conceded += match.score_home;
         squad.goal_difference += match.score_away - match.score_home;
@@ -78,7 +78,7 @@ export const updatePointsSquad = async (
           squad.points += 0;
         }
         // Se la mia squadra corrisponde alla squadra di casa controllo i punteggi casa (home)
-      } else if (match.squad_home.id === squad.id) {
+      } else if (match.squad_home.id === squad.squad_id.id) {
         squad.goal_scored += match.score_home;
         squad.goal_conceded += match.score_away;
         squad.goal_difference += match.score_home - match.score_away;
