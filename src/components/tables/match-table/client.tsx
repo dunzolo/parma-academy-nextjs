@@ -43,6 +43,7 @@ interface MatchClientProps {
   data: MatchDatum[];
   categories: string[];
   squads: string[];
+  fields: string[];
   slug: string;
 }
 
@@ -57,11 +58,20 @@ export const MatchClient: React.FC<MatchClientProps> = ({
   data,
   categories,
   squads,
+  fields,
   slug,
 }) => {
+  const [filterField, setFilterField] = useState("");
   const [filterSquad, setFilterSquad] = useState("");
   const [filterCategory, setFilterCategory] = useState("");
   const [squadsFiltered, setsquads] = useState(squads);
+
+  const handleFilterChangeField = (event: any) => {
+    if (event === "all") {
+      event = "";
+    }
+    setFilterField(event);
+  };
 
   const handleFilterChangeSquad = (event: any) => {
     if (event === "all") {
@@ -92,7 +102,8 @@ export const MatchClient: React.FC<MatchClientProps> = ({
           .includes(filterSquad.toLowerCase())) &&
       item.squad_home.category
         .toLowerCase()
-        .includes(filterCategory.toLowerCase())
+        .includes(filterCategory.toLowerCase()) &&
+      item.field.toLowerCase().includes(filterField.toLowerCase())
   );
 
   return (
@@ -105,6 +116,26 @@ export const MatchClient: React.FC<MatchClientProps> = ({
       </div>
       <Separator className="mt-3" />
       <div className="py-3 grid grid-cols-2 w-full items-center gap-1.5 sticky top-[56px] bg-white z-[1]">
+        <div className="text-center col-span-2">
+          <Label>Categoria</Label>
+          <Select onValueChange={handleFilterChangeCategory}>
+            <SelectTrigger>
+              <SelectValue placeholder="Seleziona" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="all">Tutte</SelectItem>
+                {categories.map((category) => {
+                  return (
+                    <SelectItem key={category} value={category}>
+                      {category}
+                    </SelectItem>
+                  );
+                })}
+              </SelectGroup>
+            </SelectContent>
+          </Select>
+        </div>
         <div className="text-center">
           <Label>Nome squadra</Label>
           <Select onValueChange={handleFilterChangeSquad}>
@@ -126,18 +157,18 @@ export const MatchClient: React.FC<MatchClientProps> = ({
           </Select>
         </div>
         <div className="text-center">
-          <Label>Categoria</Label>
-          <Select onValueChange={handleFilterChangeCategory}>
+          <Label>Campo</Label>
+          <Select onValueChange={handleFilterChangeField}>
             <SelectTrigger>
               <SelectValue placeholder="Seleziona" />
             </SelectTrigger>
             <SelectContent>
               <SelectGroup>
                 <SelectItem value="all">Tutte</SelectItem>
-                {categories.map((category) => {
+                {fields.map((field) => {
                   return (
-                    <SelectItem key={category} value={category}>
-                      {category}
+                    <SelectItem key={field} value={field}>
+                      {field}
                     </SelectItem>
                   );
                 })}

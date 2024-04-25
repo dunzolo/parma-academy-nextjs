@@ -2,6 +2,7 @@ import {
   createMatch,
   createMatchFinalPhase,
   getAllMatch,
+  getAllMatchFinalPhase,
   getSquadsByGroup,
   getTournament,
 } from "@/api/supabase";
@@ -126,7 +127,7 @@ const NewMatchForm: React.FC<NewMatchProps> = ({ group, slug }) => {
 
     const { day, hour, squad_home, squad_away, field } = data;
 
-    const matches = await getAllMatch();
+    const matches = await getAllMatchFinalPhase();
     const tournament = await getTournament(slug as string);
 
     await createMatchFinalPhase(

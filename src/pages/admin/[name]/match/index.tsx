@@ -1,5 +1,6 @@
 import {
   getAllCategories,
+  getAllDistinctFields,
   getAllDistinctSquads,
   getAllMatch,
 } from "@/api/supabase";
@@ -14,6 +15,7 @@ type Props = {
   matches: MatchDatum[];
   categories: string[];
   squads: string[];
+  fields: string[];
   slug: string;
 };
 
@@ -32,6 +34,7 @@ export const getServerSideProps: GetServerSideProps = async (
         matches: await getAllMatch(slug as string),
         categories: await getAllCategories(slug as string),
         squads: await getAllDistinctSquads(slug as string),
+        fields: await getAllDistinctFields(slug as string),
         slug,
       },
     };
@@ -44,7 +47,13 @@ export const getServerSideProps: GetServerSideProps = async (
 
 page.getLayout = (page: any) => <DashboardLayout>{page}</DashboardLayout>;
 
-export default function page({ matches, categories, squads, slug }: Props) {
+export default function page({
+  matches,
+  categories,
+  squads,
+  slug,
+  fields,
+}: Props) {
   const breadcrumbItems = [{ title: "Match", link: `/admin/${slug}/match` }];
   return (
     <>
@@ -54,6 +63,7 @@ export default function page({ matches, categories, squads, slug }: Props) {
           data={matches}
           categories={categories}
           squads={squads}
+          fields={fields}
           slug={slug}
         />
       </div>

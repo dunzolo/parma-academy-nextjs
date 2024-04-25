@@ -41,6 +41,21 @@ export const getRulesCurrentCategory = async (category: string) => {
   return response.data ?? [];
 };
 
+export const getAllDistinctFields = async (slug: string): Promise<string[]> => {
+  const response = await supabase
+    .from("match")
+    .select("field, tournament_id!inner(*)")
+    .eq("tournament_id.slug", slug);
+
+  if (response.data) {
+    const days: string[] = response.data.map((entry) => entry.field);
+    const uniqueDays = Array.from(new Set(days)).sort();
+    return uniqueDays;
+  }
+
+  return [];
+};
+
 /**
  * Recuperare l'elenco di tutte le squadre presenti
  * @returns
@@ -132,21 +147,6 @@ export const getAllCategoriesTournament = async (
   return response.data ?? [];
 };
 
-/**
- * Recuperare i nomi dei singoli campi da calcio
- * @returns
- */
-export const getAllDistinctFields = async (): Promise<string[]> => {
-  const response = await supabase.from("match").select("field");
-
-  if (response.data) {
-    const fields: string[] = response.data.map((entry) => entry.field);
-    const uniqueFileds = Array.from(new Set(fields)).sort();
-    return uniqueFileds;
-  }
-
-  return [];
-};
 
 /**
  * Recupera i giorni dalla risposta della query e rimuovi i duplicati

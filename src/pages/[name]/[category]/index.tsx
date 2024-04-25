@@ -71,6 +71,7 @@ export const getServerSideProps: GetServerSideProps = async (
     const groupsCategoryFinalPhase = await getGroupsByCategoryFinalPhase(
       category
     );
+    console.log(groupsCategoryFinalPhase);
 
     return {
       props: {
@@ -159,7 +160,7 @@ export default function Home({
       </h3>
 
       <Tabs defaultValue="partite">
-        <div className="bg-white sticky top-[56px] py-2 z-[2]">
+        <div className="bg-white sticky top-[56px] py-2 z-[3]">
           <TabsList className="w-full">
             <TabsTrigger className={customWidthTabs} value="partite">
               Partite
@@ -178,7 +179,7 @@ export default function Home({
           </TabsList>
         </div>
         <TabsContent value="partite" className="!mt-0 space-y-4">
-          <div className="grid grid-cols-1 w-full items-center gap-1.5 sticky top-[100px] bg-white z-[2] py-2">
+          <div className="grid grid-cols-1 w-full items-center gap-1.5 sticky top-[100px] bg-white z-[3] py-2">
             <div className="text-center">
               <Label>Nome squadra</Label>
               <Select onValueChange={handleFilterChangeSquad}>
@@ -267,25 +268,33 @@ export default function Home({
         </TabsContent>
         {groups_final_phase && (
           <TabsContent value="fasi_finali" className="space-y-4">
-            {Object.entries(groups_final_phase).map(([group, data]) => (
-              <Card key={group}>
-                <CardHeader
-                  className={
-                    "flex flex-row items-center justify-center space-y-0 p-2 rounded-t-xl opacity-90 bg-[#2E3C81] text-white"
-                  }
-                >
-                  <CardTitle className="text-sm font-medium">
-                    {"GIRONE"}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="p-2">
-                  <GroupClient data={data} />
-                </CardContent>
-                <div className="flex-1 text-sm text-muted-foreground text-center space-x-2 py-2">
-                  Classifica aggiornata
-                </div>
-              </Card>
-            ))}
+            {Object.entries(groups_final_phase).map(([group, data]) => {
+              let groupLabel = "";
+              if (group == "0") groupLabel = "A";
+              if (group == "1") groupLabel = "B";
+              if (group == "2") groupLabel = "C";
+              if (group == "3") groupLabel = "D";
+
+              return (
+                <Card key={group}>
+                  <CardHeader
+                    className={
+                      "flex flex-row items-center justify-center space-y-0 p-2 rounded-t-xl opacity-90 bg-[#2E3C81] text-white"
+                    }
+                  >
+                    <CardTitle className="text-sm font-medium">
+                      {"GIRONE " + groupLabel}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-2">
+                    <GroupClient data={data} />
+                  </CardContent>
+                  <div className="flex-1 text-sm text-muted-foreground text-center space-x-2 py-2">
+                    Classifica aggiornata
+                  </div>
+                </Card>
+              );
+            })}
           </TabsContent>
         )}
         <TabsContent value="info" className="space-y-4">
