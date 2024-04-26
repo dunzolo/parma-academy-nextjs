@@ -271,9 +271,9 @@ export default function Home({
             {Object.entries(groups_final_phase).map(([group, data]) => {
               let groupLabel = "";
               if (group == "0") groupLabel = "A";
-              if (group == "1") groupLabel = "B";
-              if (group == "2") groupLabel = "C";
-              if (group == "3") groupLabel = "D";
+              if (group == "1") groupLabel = "D";
+              if (group == "2") groupLabel = "B";
+              if (group == "3") groupLabel = "C";
 
               return (
                 <Card key={group}>
