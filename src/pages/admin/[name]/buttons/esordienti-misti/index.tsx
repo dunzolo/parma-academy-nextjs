@@ -50,25 +50,25 @@ export default function Page({ slug }: Props) {
 
   const handleFirstGroup = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const groups = await getRankingByGroup(["L", "M", "N"]);
+    const groups = await getRankingByGroup(["L", "M", "N"], slug as string);
     await generateFirstGroup(groups, "group_eso_misti_first");
   };
 
   const handleSecondGroup = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const groups = await getRankingByGroup(["L", "M", "N"]);
+    const groups = await getRankingByGroup(["L", "M", "N"], slug as string);
     await generateSecondGroup(groups, "group_eso_misti_second");
   };
 
   const handleThirdGroup = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const groups = await getRankingByGroup(["L", "M", "N"]);
+    const groups = await getRankingByGroup(["L", "M", "N"], slug as string);
     await generateThirdGroup(groups, "group_eso_misti_third");
   };
 
   const handleFourthGroup = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    const groups = await getRankingByGroup(["L", "M", "N"]);
+    const groups = await getRankingByGroup(["L", "M", "N"], slug as string);
     await generateFourthGroup(groups, "group_eso_misti_fourth");
   };
 

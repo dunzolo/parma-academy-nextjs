@@ -38,7 +38,7 @@ export const getServerSideProps: GetServerSideProps = async (
   try {
     return {
       props: {
-        ranking: await getRankingByGroup(["pulcini"]),
+        ranking: await getRankingByGroup(["pulcini"], slug as string),
         slug,
       },
     };
@@ -68,6 +68,18 @@ export default function Page({ ranking, slug }: Props) {
       category: "",
       created_at: "",
       show_label_group: true,
+      tournament_id: {
+        id: "",
+        name: "",
+        year: 0,
+        logo: "",
+        description: "",
+        date_start: "",
+        date_end: "",
+        background_image: "",
+        created_at: "",
+        slug: "",
+      },
     },
     squad_away: {
       id: "",
@@ -78,6 +90,18 @@ export default function Page({ ranking, slug }: Props) {
       category: "",
       created_at: "",
       show_label_group: true,
+      tournament_id: {
+        id: "",
+        name: "",
+        year: 0,
+        logo: "",
+        description: "",
+        date_start: "",
+        date_end: "",
+        background_image: "",
+        created_at: "",
+        slug: "",
+      },
     },
     outcome: "",
     score_home: 0,
