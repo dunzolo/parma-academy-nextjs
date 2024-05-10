@@ -38,6 +38,7 @@ import { Match, MatchDatum, MatchProvisionalDatum } from "@/models/Match";
 import { Squad } from "@/models/Squad";
 import { SquadGroup } from "@/models/SquadGroup";
 import { Tournament } from "@/models/Tournament";
+import { supabase } from "@/supabase/supabase";
 import { dateFormatItalian } from "@/utils/utils";
 import { GetServerSideProps, GetServerSidePropsContext } from "next";
 import { useState } from "react";
@@ -71,7 +72,6 @@ export const getServerSideProps: GetServerSideProps = async (
     const groupsCategoryFinalPhase = await getGroupsByCategoryFinalPhase(
       category
     );
-    console.log(groupsCategoryFinalPhase);
 
     return {
       props: {
@@ -85,7 +85,7 @@ export const getServerSideProps: GetServerSideProps = async (
           true
         ),
         category: await getSingleCategory(category as string),
-        groups: await getRankingByGroup(groupsCategory),
+        groups: await getRankingByGroup(groupsCategory, slug as string),
         groups_final_phase: groupsCategoryFinalPhase[0]
           ? await getRankingByFinalGroup(groupsCategoryFinalPhase)
           : null,
@@ -244,27 +244,30 @@ export default function Home({
           )}
         </TabsContent>
         <TabsContent value="gironi" className="space-y-4">
-          {Object.entries(groups).map(([group, data]) => (
-            <Card key={group}>
-              <CardHeader
-                className={
-                  "flex flex-row items-center justify-center space-y-0 p-2 rounded-t-xl opacity-90 bg-[#2E3C81] text-white"
-                }
-              >
-                <CardTitle className="text-sm font-medium">
-                  {data[0].squad_id.show_label_group
-                    ? "GIRONE " + data[0].squad_id.group
-                    : "GIRONE"}
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="p-2">
-                <GroupClient data={data} />
-              </CardContent>
-              <div className="flex-1 text-sm text-muted-foreground text-center space-x-2 py-2">
-                Classifica aggiornata
-              </div>
-            </Card>
-          ))}
+          {Object.entries(groups).map(
+            ([group, data]) =>
+              group && (
+                <Card key={group}>
+                  <CardHeader
+                    className={
+                      "flex flex-row items-center justify-center space-y-0 p-2 rounded-t-xl opacity-90 bg-[#2E3C81] text-white"
+                    }
+                  >
+                    <CardTitle className="text-sm font-medium">
+                      {data[0].squad_id.show_label_group
+                        ? "GIRONE " + data[0].squad_id.group
+                        : "GIRONE"}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="p-2">
+                    <GroupClient data={data} />
+                  </CardContent>
+                  <div className="flex-1 text-sm text-muted-foreground text-center space-x-2 py-2">
+                    Classifica aggiornata
+                  </div>
+                </Card>
+              )
+          )}
         </TabsContent>
         {groups_final_phase && (
           <TabsContent value="fasi_finali" className="space-y-4">
@@ -297,15 +300,17 @@ export default function Home({
             })}
           </TabsContent>
         )}
-        <TabsContent value="info" className="space-y-4">
-          <h3 className="font-bold text-center">REGOLAMENTO</h3>
-          <div
-            className="px-4 !mt-0 [&_ul]:list-disc [&_li]:pt-2 [&_li]:text-sm"
-            dangerouslySetInnerHTML={{
-              __html: rules[0].rule_category_id.description,
-            }}
-          />
-        </TabsContent>
+        {rules.lenght > 0 && (
+          <TabsContent value="info" className="space-y-4">
+            <h3 className="font-bold text-center">REGOLAMENTO</h3>
+            <div
+              className="px-4 !mt-0 [&_ul]:list-disc [&_li]:pt-2 [&_li]:text-sm"
+              dangerouslySetInnerHTML={{
+                __html: rules[0].rule_category_id.description,
+              }}
+            />
+          </TabsContent>
+        )}
       </Tabs>
     </div>
   );

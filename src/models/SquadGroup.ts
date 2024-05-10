@@ -1,4 +1,5 @@
 import { Squad } from "./Squad"
+import { Tournament } from "./Tournament"
 
 export interface SquadGroup {
     [x: string]: any
@@ -9,4 +10,5 @@ export interface SquadGroup {
     goal_scored: number
     goal_conceded: number
     goal_difference: number
+    tournament_id: Tournament
 }

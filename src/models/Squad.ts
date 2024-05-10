@@ -1,3 +1,5 @@
+import { Tournament } from "./Tournament";
+
 export interface Squad {
   id: string;
   logo: string;
@@ -7,4 +9,5 @@ export interface Squad {
   category: string;
   show_label_group: boolean;
   created_at: string;
+  tournament_id: Tournament;
 }

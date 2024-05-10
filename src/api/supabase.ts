@@ -140,7 +140,7 @@ export const getAllCategoriesTournament = async (
 ): Promise<Category[]> => {
   const response = await supabase
     .from("categories")
-    .select("*, rule_category_id!inner(*), tournament_id!inner(*)")
+    .select("*, tournament_id!inner(*)")
     .eq("tournament_id.slug", slug)
     .order("name", { ascending: true });
 
@@ -409,20 +409,23 @@ export const getSquadsByFinalPhaseGroup = async (
  * @returns
  */
 export const getRankingByGroup = async (
-  groups: string[]
+  groups: string[],
+  slug: string
 ): Promise<SquadGroup[][]> => {
   const responses = await Promise.all(
     groups.map(async (group) => {
       const { data } = await supabase
         .from(`group_${group}`)
-        .select("*, squad_id(*)")
+        .select(`*, squad_id!inner(*), tournament_id!inner(*)`)
+        .eq("tournament_id.slug", slug)
         .order("points", { ascending: false })
         .order("goal_difference", { ascending: false })
         .order("goal_scored", { ascending: false });
 
-      return data as SquadGroup[];
-    })
-  );
+        return data as SquadGroup[];
+      })
+    );
+    
   return responses;
 };
 
