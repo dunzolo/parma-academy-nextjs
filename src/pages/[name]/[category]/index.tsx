@@ -300,17 +300,15 @@ export default function Home({
             })}
           </TabsContent>
         )}
-        {rules.lenght > 0 && (
-          <TabsContent value="info" className="space-y-4">
-            <h3 className="font-bold text-center">REGOLAMENTO</h3>
-            <div
-              className="px-4 !mt-0 [&_ul]:list-disc [&_li]:pt-2 [&_li]:text-sm"
-              dangerouslySetInnerHTML={{
-                __html: rules[0].rule_category_id.description,
-              }}
-            />
-          </TabsContent>
-        )}
+        <TabsContent value="info" className="space-y-4">
+          <h3 className="font-bold text-center">REGOLAMENTO</h3>
+          <div
+            className="px-4 !mt-0 [&_ul]:list-disc [&_li]:pt-2 [&_li]:text-sm"
+            dangerouslySetInnerHTML={{
+              __html: rules[0].rule_category_id.description,
+            }}
+          />
+        </TabsContent>
       </Tabs>
     </div>
   );
